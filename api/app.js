@@ -10,6 +10,8 @@ const cors = require('cors')
 // middleware
 
 app.use(express.json())
+
+// added for the react connection
 app.use(cors());
 
 
