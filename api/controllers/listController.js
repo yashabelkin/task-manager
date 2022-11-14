@@ -1,21 +1,28 @@
-const List = require('../models/List')
+const List = require('../models/listModel')
 
 
-const getAllLists = async (req, res) => {
-    try {
-      const lists = await List.find({})
-      res.status(200).json({lists:lists})
-    } catch (error) {
-      res.status(500).json({msg: error})        
+exports.getAllLists = async (req, res) => {
+    try{
+    const lists = await List.find()
+    res.ststus(200).json({
+        status: 'success',
+        results: lists.length,
+        data: lists 
+        
+    });
+    } catch (err) {
+        res.status(404).json({
+            status:'fail',
+            message:err
+        });
     }
 }
 
-const getList = async (req, res) => {
+exports.getList = async (req, res) => {
     try {
-        const {id:listID} = req.params 
-        const list = await list.findOne({_id:listID});
+        const list = await list.findById(req.params.id).populate('tasks');
     if (!list) {
-        return res.status(404).json({msg:`no list with id : ${listID} `})
+        return res.status(404).json({msg:`no list with id : ${listID}`})
     }    
         res.status(200).json({list})    
     } catch (error) {
@@ -24,7 +31,7 @@ const getList = async (req, res) => {
     
 }
 
-const createList = async (req, res) => {
+exports.createList = async (req, res) => {
     try {
         const list = await List.create(req.body)
         res.status(201).json({list})
@@ -33,7 +40,7 @@ const createList = async (req, res) => {
     }    
 }
 
-const updateList = async (req, res) => {
+exports.updateList = async (req, res) => {
     try {
         const {id:listID} = req.params;
         const list = await List.findOneAndUpdate({_id:listID}, req.body,{
@@ -50,7 +57,7 @@ const updateList = async (req, res) => {
     
 }
 
-const deleteList = async (req, res) => {
+exports.deleteList = async (req, res) => {
     try {
         const {id:listID} = req.params; 
         const list = await List.findOneAndDelete({_id:listID}); 
@@ -63,7 +70,3 @@ const deleteList = async (req, res) => {
     }
     
 }
-
-module.exports = { 
-    getAllLists, getList, createList, updateList, deleteList
- }

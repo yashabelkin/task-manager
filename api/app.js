@@ -1,15 +1,21 @@
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
-const tasks = require('./routes/tasks')
-const lists = require('./routes/lists')
-const connectDB = require('./db/connect')
+const AppError = require('./utilis/appError')
+const globalErrorHandler = require('./controllers/errorController')
+const tasks = require('./routes/taskRoutes')
+const lists = require('./routes/listRoutes')
 require('dotenv').config()
-const notFound = require('./middleware/not-found')
-const errorHandler = require('./middleware/error-handle')
 const cors = require('cors')
-// middleware
 
-app.use(express.json())
+
+// middleware
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
+
+
+app.use(express.json());
 
 // added for the react connection
 app.use(cors());
@@ -19,22 +25,22 @@ app.use(cors());
 
 app.use('/api/v1/lists', lists)
 
-app.use('/api/v1/lists/:id/tasks', tasks)
+app.use('/api/v1/tasks', tasks)
 
-app.use(notFound)
+app.all('*', (req, res, next) => {
+    res.status(404).json({
+        status: 'fail',
+        message: `can't find ${req.originalUrl} on this server... `
+    });
 
-app.use(errorHandler)
+    const err = new Error (`can't find ${req.originalUrl} on this server...`);
+    err.status = 'fail';
+    err.statusCode = 404;
 
+    next(new AppError(`can't find ${req.originalUrl} on this server...`, 404));
+});
 
-const port = process.env.PORT || 8000
+app.use(globalErrorHandler)
 
-const start = async () => {
-    try {
-     await connectDB(process.env.MONGO_STR)
-     app.listen(port, console.log(`listening on port ${port}...`))
-    } catch (error) {
-      console.log(error)  
-    }
-}
- 
-start()
+module.exports = app;
+

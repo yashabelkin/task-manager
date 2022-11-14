@@ -4,7 +4,8 @@
   "description": "task-manager api",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js"
   },
   "author": "yasha",
   "license": "ISC",
@@ -14,6 +15,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "mongoose": "^6.6.7"
+    "mongoose": "^6.6.7",
+    "morgan": "^1.10.0"
   }
 }

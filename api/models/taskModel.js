@@ -12,10 +12,30 @@ const TaskSchema = new mongoose.Schema ({
         type:Boolean,
         default:false,
     },
-    _listId: {
+    createdAt:{
+        type:Date,
+        default: Date.now
+    },
+    list: {
         type: mongoose.Types.ObjectId,
+        ref: 'List',
         required:true
     }
+},
+{
+    toJSON: { virtuals:true },
+    toObject: { virtuals:true }
+}
+)
+// virtual populate
+TaskSchema.pre(/^find/, function(next) {
+    this.populate({
+        path: 'list',
+        select: 'name'
+    })
+    next()
 })
 
-module.exports = mongoose.model('Task', TaskSchema) 
+const Task = mongoose.model('Task', TaskSchema)
+module.exports = Task
+ 
