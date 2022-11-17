@@ -6,7 +6,11 @@ const taskController = require('./../controllers/taskController')
 router
     .route('/')
     .get(taskController.getAllTasks)
-    .post(taskController.createTask)
+    .post(
+        taskController.setTaskIds,
+        taskController.createTask
+           
+    )
 
 router
     .route('/:id')

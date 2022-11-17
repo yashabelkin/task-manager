@@ -18,15 +18,14 @@ const ListSchema = new mongoose.Schema ({
 {
     toJSON: { virtuals:true },
     toObject: { virtuals:true }
-})
-
+}
+)
 
 // virtual populate
-ListSchema.virtual('tasksN', {
+ListSchema.virtual('tasks', {
     ref: 'Task',
     foreignField:'list',
     localField:'_id'
-
 })
 
 

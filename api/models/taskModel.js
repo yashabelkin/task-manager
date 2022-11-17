@@ -19,7 +19,7 @@ const TaskSchema = new mongoose.Schema ({
     list: {
         type: mongoose.Types.ObjectId,
         ref: 'List',
-        required:true
+        required:[true, 'Task must belong to a list']
     }
 },
 {
@@ -27,14 +27,14 @@ const TaskSchema = new mongoose.Schema ({
     toObject: { virtuals:true }
 }
 )
-// virtual populate
-TaskSchema.pre(/^find/, function(next) {
-    this.populate({
-        path: 'list',
-        select: 'name'
-    })
-    next()
-})
+// // virtual populate
+// TaskSchema.pre(/^find/, function(next) {
+//     this.populate({
+//         path: 'list',
+//         select: 'name'
+//     })
+//     next()
+// })
 
 const Task = mongoose.model('Task', TaskSchema)
 module.exports = Task

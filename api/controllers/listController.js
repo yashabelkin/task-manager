@@ -1,72 +1,37 @@
-const List = require('../models/listModel')
+const List = require('../models/listModel');
+const service = require('./../services/handlerService');
+const AppError = require('./../utils/appError');
+const catchAsync = require('./../utils/catchAsync')
 
+exports.getAllLists = catchAsync(async (req, res, next) => {
+    
+        const lists = await List.find();
 
-exports.getAllLists = async (req, res) => {
-    try{
-    const lists = await List.find()
-    res.ststus(200).json({
-        status: 'success',
-        results: lists.length,
-        data: lists 
-        
-    });
-    } catch (err) {
-        res.status(404).json({
-            status:'fail',
-            message:err
+        res.status(200).json({
+            status: 'success',
+            data: {
+                lists
+            }
         });
-    }
-}
+});
 
-exports.getList = async (req, res) => {
-    try {
-        const list = await list.findById(req.params.id).populate('tasks');
-    if (!list) {
-        return res.status(404).json({msg:`no list with id : ${listID}`})
-    }    
-        res.status(200).json({list})    
-    } catch (error) {
-        res.status(500).json({msg: error})   
-    }
-    
-}
+exports.getList = catchAsync(async (req, res, next) => {
+        const list = await List.findById(req.params.id).populate('tasks');
 
-exports.createList = async (req, res) => {
-    try {
-        const list = await List.create(req.body)
-        res.status(201).json({list})
-    } catch (error) {
-        res.status(500).json({msg: error})
-    }    
-}
-
-exports.updateList = async (req, res) => {
-    try {
-        const {id:listID} = req.params;
-        const list = await List.findOneAndUpdate({_id:listID}, req.body,{
-            new:true,
-            runValidators:true,
-         }) 
         if (!list) {
-            return res.status(404).json({msg:`no list with id : ${listID} `})
-        } 
-        res.status(200).json({list})
-    } catch (error) {
-        res.status(500).json({msg: error})  
-    }
-    
-}
-
-exports.deleteList = async (req, res) => {
-    try {
-        const {id:listID} = req.params; 
-        const list = await List.findOneAndDelete({_id:listID}); 
-        if (!list) {
-            return res.status(404).json({msg:`no list with id : ${listID} `})  
+            return next(new AppError('No list found with that ID', 404))
         }
-        res.status(200).json({list})    
-    } catch (error) {
-        res.status(500).json({msg: error})   
-    }
-    
-}
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                list
+            }
+        });
+});
+
+exports.createList = service.createOne(List)
+
+exports.updateList = service.updateOne(List)
+
+exports.deleteList = service.deleteOne(List)
