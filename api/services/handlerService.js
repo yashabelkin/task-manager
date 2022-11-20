@@ -1,6 +1,13 @@
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
+
+exports.setTaskIds = (req, res, next) => {
+    if (!req.body.list) req.body.list = req.params.id;
+    next();
+};
+
+
 exports.deleteOne = Model => catchAsync(async (req, res, next) => {
     const doc =  await Model.findByIdAndDelete(req.params.id);
 
@@ -41,4 +48,34 @@ exports.createOne = Model => catchAsync(async (req, res, next) => {
             data: newDoc
         }
     });   
+});
+
+exports.getOne = (Model, popOptions) => catchAsync(async (req, res, next) => {
+
+    let query = Model.findById(req.params.id);
+    if (popOptions) query = query.populate(popOptions);
+    const doc = await query;
+
+    if (!doc) {
+        return next(new AppError('No document found with that ID', 404))
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: doc
+        }
+    });
+});
+
+exports.getAll = Model => catchAsync(async (req, res, next) => {
+    
+    const doc = await Model.find();
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: doc
+        }
+    });
 });

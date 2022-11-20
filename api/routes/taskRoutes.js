@@ -2,12 +2,12 @@ const express = require('express')
 const router = express.Router({ mergeParams: true });
 
 const taskController = require('./../controllers/taskController')
-
+const service = require('./../services/handlerService')
 router
     .route('/')
     .get(taskController.getAllTasks)
     .post(
-        taskController.setTaskIds,
+        service.setTaskIds,
         taskController.createTask
            
     )
